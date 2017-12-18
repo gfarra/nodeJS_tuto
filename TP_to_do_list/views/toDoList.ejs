@@ -1,12 +1,28 @@
-<h1>Ma to do list :</h1>
+<!DOCTYPE html>
 
-<p>
-  <%
-    for(var i = 1 ; i <= (List.length - 1) ; i++) {
-  %>
+<html>
+    <head>
+        <title>Ma todolist</title>
+        <style>
+            a {text-decoration: none; color: black;}
+        </style>
+    </head>
 
-  <%= List[i] %>...
+    <body>
+        <h1>Ma todolist</h1>
 
-  <% }
-  %>
-</p>
+        <ul>
+        <% toDoList.forEach(function(toDoList, index) { %>
+            <li><a href="/toDoList/supprimer/<%= index %>">✘</a> <%= toDoList %></li>
+        <% }); %>
+        </ul>
+
+        <form action="/toDoList/ajouter/" method="post">
+            <p>
+                <label for="newtodo">Que dois-je faire ?</label>
+                <input type="text" name="newtodo" id="newtodo" autofocus />
+                <input type="submit" />
+            </p>
+        </form>
+    </body>
+</html>

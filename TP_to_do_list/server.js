@@ -1,23 +1,45 @@
-var session = require('cookie-session'); // Charge le middleware de sessions
 var express = require('express');
-var bodyParser = require('body-parser'); // Charge le middleware de gestion des paramètres
-
+var session = require('cookie-session');
+var bodyParser = require('body-parser');
 var urlencodedParser = bodyParser.urlencoded({ extended: false });
-var List = [];
-var nbItem = List.length;
+
 var app = express();
 
+// Use session
 app.use(session({secret: 'todotopsecret'}))
 
+// If no todolist we create one
+.use(function(req, res, next){
+  if(typeof(req.session.toDoList) == "undefined" ) {
+    req.session.toDoList = [];
+  }
+  next();
+})
 
-app.get('/toDoList', function(req, res){
-  res.render('toDoList.ejs', {List: List})
-});
+// view list
+.get('/toDoList', function(req, res){
+  res.render('toDoList.ejs', {toDoList: req.session.toDoList})
+})
 
-app.post('/toDoList/ajouter', function(req, res){
-  res.render('toDoList.ejs', {List: List})
-});
 
-app.post('/toDoList/:id', function(req, res){
-  res.render('toDoList.ejs', {List: List})
-});
+// add item
+.post('/toDoList/ajouter/', urlencodedParser, function(req, res){
+  if (req.body.newtodo != '') {
+         req.session.toDoList.push(req.body.newtodo);
+     }
+  res.redirect('/toDoList');
+})
+
+// delete item
+.get('/toDoList/supprimer/:id', function(req, res) {
+    if (req.params.id != '') {
+        req.session.toDoList.splice(req.params.id, 1);
+    }
+    res.redirect('/toDoList');
+})
+
+.use(function(req, res, next){
+    res.redirect('/toDoList');
+})
+
+.listen(8080);
